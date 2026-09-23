@@ -197,12 +197,33 @@ def logout():
 # ============================================================
 # DASHBOARD
 # ============================================================
-
 @app.route("/dashboard")
-@login_required
 def dashboard():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
 
-    conn = db()
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT * FROM admin_accounts WHERE id = ?",
+        (session["admin_id"],)
+    )
+    admin = cursor.fetchone()
+
+    cursor.execute(
+        "SELECT * FROM players ORDER BY id DESC"
+    )
+    players = cursor.fetchall()
+
+    conn.close()
+
+    return render_template(
+        "dashboard.html",
+        admin=admin,
+        players=players
+    )w
+
 
     # ---------------- SUPER ADMIN ----------------
 
