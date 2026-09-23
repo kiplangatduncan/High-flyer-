@@ -673,7 +673,7 @@ def withdraw_player_points():
 # Record transaction
 @app.route("/player/withdraw-points", methods=["POST"])
 @login_required
-def withdraw_player_points():
+
 
     if session["role"] != "admin":
         flash("Only admins can withdraw player points.", "error")
