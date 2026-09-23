@@ -605,8 +605,6 @@ def add_player_points():
     return redirect(url_for("dashboard"))
 
 
-@app.route("/player/withdraw-points", methods=["POST"])
-def withdraw_player_points():
     if session.get("role") != "admin":
         return redirect(url_for("login"))
 
