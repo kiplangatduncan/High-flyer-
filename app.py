@@ -655,4 +655,417 @@ def game():
 @login_required
 def player_play():
 
-    if session["
+    if session["role"] != "admin":
+
+        return jsonify({
+            "success": False,
+            "message": "Admin game-control access required."
+        }), 403
+
+    try:
+
+        player_id = int(request.form["player_id"])
+        stake = float(request.form["stake"])
+
+    except (ValueError, TypeError):
+
+        return jsonify({
+            "success": False,
+            "message": "Invalid player or points amount."
+        }), 400
+
+    if stake <= 0:
+
+        return jsonify({
+            "success": False,
+            "message": "Points must be greater than zero."
+        }), 400
+
+    conn = db()
+
+    player = conn.execute(
+        """
+        SELECT *
+        FROM players
+        WHERE id = ?
+        AND admin_id = ?
+        AND active = 1
+        """,
+        (
+            player_id,
+            session["user_id"]
+        )
+    ).fetchone()
+
+    if not player:
+
+        conn.close()
+
+        return jsonify({
+            "success": False,
+            "message": "Player not found."
+        }), 404
+
+    if player["balance"] < stake:
+
+        conn.close()
+
+        return jsonify({
+            "success": False,
+            "message": "Player does not have enough points."
+        }), 400
+
+    # Prevent multiple active rounds
+    active_round = conn.execute(
+        """
+        SELECT id
+        FROM game_rounds
+        WHERE player_id = ?
+        AND status = 'playing'
+        """,
+        (player_id,)
+    ).fetchone()
+
+    if active_round:
+
+        conn.close()
+
+        return jsonify({
+            "success": False,
+            "message": "Player already has an active round."
+        }), 400
+
+    # Deduct stake
+    conn.execute(
+        """
+        UPDATE players
+        SET balance = balance - ?
+        WHERE id = ?
+        """,
+        (
+            stake,
+            player_id
+        )
+    )
+
+    # Create round
+    cur = conn.execute(
+        """
+        INSERT INTO game_rounds
+        (
+            player_id,
+            stake,
+            multiplier,
+            status,
+            created_at
+        )
+        VALUES (?, ?, 1.00, 'playing', ?)
+        """,
+        (
+            player_id,
+            stake,
+            datetime.utcnow().isoformat()
+        )
+    )
+
+    round_id = cur.lastrowid
+
+    conn.execute(
+        """
+        INSERT INTO point_transactions
+        (
+            player_id,
+            admin_id,
+            amount,
+            transaction_type,
+            created_at
+        )
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (
+            player_id,
+            session["user_id"],
+            -stake,
+            "game_stake",
+            datetime.utcnow().isoformat()
+        )
+    )
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({
+        "success": True,
+        "round_id": round_id,
+        "stake": stake
+    })
+
+============================================================
+# COLLECT POINTS
+# ============================================================
+
+@app.route("/player/collect", methods=["POST"])
+@login_required
+def player_collect():
+
+    if session["role"] != "admin":
+
+        return jsonify({
+            "success": False,
+            "message": "Admin game-control access required."
+        }), 403
+
+    try:
+
+        round_id = int(request.form["round_id"])
+        multiplier = float(request.form["multiplier"])
+
+    except (ValueError, TypeError):
+
+        return jsonify({
+            "success": False,
+            "message": "Invalid round."
+        }), 400
+
+    if multiplier < 1:
+
+        return jsonify({
+            "success": False,
+            "message": "Invalid multiplier."
+        }), 400
+
+    conn = db()
+
+    round_row = conn.execute(
+        """
+        SELECT
+            r.*,
+            p.admin_id
+        FROM game_rounds r
+        JOIN players p
+            ON p.id = r.player_id
+        WHERE r.id = ?
+        AND p.admin_id = ?
+        AND r.status = 'playing'
+        """,
+        (
+            round_id,
+            session["user_id"]
+        )
+    ).fetchone()
+
+    if not round_row:
+
+        conn.close()
+
+        return jsonify({
+            "success": False,
+            "message": "Active round not found."
+        }), 404
+
+    collected = round_row["stake"] * multiplier
+
+    conn.execute(
+        """
+        UPDATE players
+        SET balance = balance + ?
+        WHERE id = ?
+        """,
+        (
+            collected,
+            round_row["player_id"]
+        )
+    )
+
+    conn.execute(
+        """
+        UPDATE game_rounds
+        SET
+            multiplier = ?,
+            status = 'collected',
+            collected_points = ?,
+            collected_at = ?
+        WHERE id = ?
+        """,
+        (
+            multiplier,
+            collected,
+            datetime.utcnow().isoformat(),
+            round_id
+        )
+    )
+
+    conn.execute(
+        """
+        INSERT INTO point_transactions
+        (
+            player_id,
+            admin_id,
+            amount,
+            transaction_type,
+            created_at
+        )
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (
+            round_row["player_id"],
+            session["user_id"],
+            collected,
+            "game_collect",
+            datetime.utcnow().isoformat()
+        )
+    )
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({
+        "success": True,
+        "points": collected,
+        "multiplier": multiplier
+    })
+
+
+
+#============================================================
+# PLAYER BALANCE
+# ============================================================
+
+@app.route("/player/balance/<int:player_id>")
+@login_required
+def player_balance(player_id):
+
+    if session["role"] != "admin":
+
+        return jsonify({
+            "success": False,
+            "message": "Access denied."
+        }), 403
+
+    conn = db()
+
+    player = conn.execute(
+        """
+        SELECT id, username, balance
+        FROM players
+        WHERE id = ?
+        AND admin_id = ?
+        """,
+        (
+            player_id,
+            session["user_id"]
+        )
+    ).fetchone()
+
+    conn.close()
+
+    if not player:
+
+        return jsonify({
+            "success": False,
+            "message": "Player not found."
+        }), 404
+
+    return jsonify({
+        "success": True,
+        "player_id": player["id"],
+        "username": player["username"],
+        "balance": player["balance"]
+    })
+
+
+
+# ============================================================
+# TRANSACTION HISTORY
+# ============================================================
+
+@app.route("/player/history/<int:player_id>")
+@login_required
+def player_history(player_id):
+
+    if session["role"] != "admin":
+
+        return jsonify({
+            "success": False,
+            "message": "Access denied."
+        }), 403
+
+    conn = db()
+
+    rows = conn.execute(
+        """
+        SELECT
+            amount,
+            transaction_type,
+            created_at
+        FROM point_transactions
+        WHERE player_id = ?
+        AND admin_id = ?
+        ORDER BY id DESC
+        LIMIT 100
+        """,
+        (
+            player_id,
+            session["user_id"]
+        )
+    ).fetchall()
+
+    conn.close()
+
+    return jsonify({
+        "success": True,
+        "transactions": [
+            dict(row)
+            for row in rows
+        ]
+    })
+
+
+## ============================================================
+# MULTIPLAYER SOCKET
+# ============================================================
+
+@socketio.on("join_game")
+def join_game(data):
+
+    emit(
+        "player_joined",
+        {
+            "username": data.get(
+                "username",
+                "Player"
+            )
+        },
+        broadcast=True
+    )
+
+
+@socketio.on("game_message")
+def game_message(data):
+
+    emit(
+        "game_message",
+        data,
+        broadcast=True
+    )
+
+
+# ============================================================
+# DATABASE INITIALIZATION
+# ============================================================
+
+init_db()
+
+
+# ============================================================
+# START SERVER
+# ============================================================
+
+if __name__ == "__main__":
+
+    socketio.run(
+        app,
+        host="0.0.0.0",
+        port=5000,
+        debug=True
+    )
