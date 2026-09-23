@@ -1,54 +1,701 @@
 {% extends "base.html" %}
+
 {% block content %}
+
 <div class="game-shell">
+
+    <!-- TOP BAR -->
+
     <div class="game-top">
-        <div class="multiplier">1.00x</div>
-        <div class="brand-small">HIGH FLYER</div>
-        <div class="live">● LIVE</div>
+
+        <div class="multiplier" id="multiplier">
+            1.00x
+        </div>
+
+        <div class="brand-small">
+            HIGH FLYER
+        </div>
+
+        <div class="live">
+            ● LIVE
+        </div>
+
     </div>
+
+
+    <!-- GAME AREA -->
 
     <div class="game-stage">
+
         <div class="sky">
+
             <div class="cloud c1"></div>
             <div class="cloud c2"></div>
-            <div class="tower">✦</div>
-            <div id="aircraft">✈</div>
+
+            <div class="tower">
+                ✦
+            </div>
+
+            <div id="aircraft">
+                ✈
+            </div>
+
         </div>
-        <div class="game-message" id="gameMessage">WAITING FOR ROUND</div>
+
+        <div
+            class="game-message"
+            id="gameMessage"
+        >
+            WAITING FOR ROUND
+        </div>
+
     </div>
+
+
+    <!-- GAME CONTROL -->
+
+    <div class="card game-controls">
+
+        <h2>Play Round</h2>
+
+        <div class="inline-form">
+
+            <select id="playerSelect">
+
+                <option value="">
+                    Select player
+                </option>
+
+                {% for player in players %}
+
+                <option
+                    value="{{ player.id }}"
+                    data-balance="{{ player.balance }}"
+                >
+                    {{ player.username }}
+                    — {{ "%.2f"|format(player.balance) }} pts
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+
+            <input
+                type="number"
+                id="stake"
+                min="1"
+                step="1"
+                placeholder="Points"
+            >
+
+
+            <button
+                type="button"
+                id="playButton"
+                onclick="startRound()"
+            >
+                PLAY
+            </button>
+
+
+            <button
+                type="button"
+                id="collectButton"
+                onclick="collectPoints()"
+                disabled
+            >
+                COLLECT
+            </button>
+
+        </div>
+
+
+        <div class="game-info">
+
+            <span>
+                Selected:
+                <strong id="selectedPlayer">
+                    None
+                </strong>
+            </span>
+
+            <span>
+                Balance:
+                <strong id="selectedBalance">
+                    0.00
+                </strong>
+                pts
+            </span>
+
+            <span>
+                Round:
+                <strong id="roundStatus">
+                    WAITING
+                </strong>
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- PLAYERS -->
 
     <div class="player-strip">
+
         {% for player in players %}
-        <div class="player-card">
-            <div class="number">{{ loop.index }}</div>
-            <div>
-                <strong>{{ player.username }}</strong>
-                <small>KES {{ "%.2f"|format(player.balance) }}</small>
+
+        <div
+            class="player-card"
+            id="player-card-{{ player.id }}"
+        >
+
+            <div class="number">
+                {{ loop.index }}
             </div>
+
+            <div>
+
+                <strong>
+                    {{ player.username }}
+                </strong>
+
+                <small>
+                    {{ "%.2f"|format(player.balance) }} pts
+                </small>
+
+            </div>
+
         </div>
+
         {% endfor %}
+
     </div>
+
+
+    <!-- POINTS NOTICE -->
+
+    <div class="card">
+
+        <p>
+            <strong>Game Points:</strong>
+            Points are for gameplay only and cannot be
+            converted to or withdrawn as money.
+        </p>
+
+    </div>
+
 </div>
 
+
 <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+
 <script>
+
 const socket = io();
-socket.emit("join_game", {username: "{{ session.get('username') }}"});
 
-let value = 1.00;
-const multiplier = document.querySelector(".multiplier");
-const aircraft = document.getElementById("aircraft");
-const message = document.getElementById("gameMessage");
+socket.emit(
+    "join_game",
+    {
+        username: "{{ session.get('username') }}"
+    }
+);
 
-setInterval(() => {
-    value += 0.01;
-    multiplier.textContent = value.toFixed(2) + "x";
-    aircraft.style.transform = `translate(${Math.min(value * 12, 500)}px, ${-Math.min(value * 5, 170)}px)`;
-    message.textContent = "FLYING";
-}, 120);
 
-socket.on("player_joined", (data) => {
-    console.log(data.username + " joined");
-});
+// ============================================================
+// ELEMENTS
+// ============================================================
+
+const multiplierElement =
+    document.getElementById("multiplier");
+
+const aircraft =
+    document.getElementById("aircraft");
+
+const message =
+    document.getElementById("gameMessage");
+
+const playerSelect =
+    document.getElementById("playerSelect");
+
+const stakeInput =
+    document.getElementById("stake");
+
+const playButton =
+    document.getElementById("playButton");
+
+const collectButton =
+    document.getElementById("collectButton");
+
+const selectedPlayer =
+    document.getElementById("selectedPlayer");
+
+const selectedBalance =
+    document.getElementById("selectedBalance");
+
+const roundStatus =
+    document.getElementById("roundStatus");
+
+
+// ============================================================
+// GAME VARIABLES
+// ============================================================
+
+let currentMultiplier = 1.00;
+
+let currentRoundId = null;
+
+let roundRunning = false;
+
+let multiplierTimer = null;
+
+
+// ============================================================
+// PLAYER SELECTION
+// ============================================================
+
+playerSelect.addEventListener(
+    "change",
+    function () {
+
+        const option =
+            this.options[this.selectedIndex];
+
+        if (!this.value) {
+
+            selectedPlayer.textContent =
+                "None";
+
+            selectedBalance.textContent =
+                "0.00";
+
+            return;
+        }
+
+        selectedPlayer.textContent =
+            option.text.split(" — ")[0];
+
+        selectedBalance.textContent =
+            parseFloat(
+                option.dataset.balance || 0
+            ).toFixed(2);
+    }
+);
+
+
+// ============================================================
+// START ROUND
+// ============================================================
+
+async function startRound() {
+
+    if (roundRunning) {
+        return;
+    }
+
+    const playerId =
+        playerSelect.value;
+
+    const stake =
+        parseFloat(stakeInput.value);
+
+
+    if (!playerId) {
+
+        alert(
+            "Select a player first."
+        );
+
+        return;
+    }
+
+
+    if (!stake || stake <= 0) {
+
+        alert(
+            "Enter the points to play."
+        );
+
+        return;
+    }
+
+
+    const form =
+        new FormData();
+
+    form.append(
+        "player_id",
+        playerId
+    );
+
+    form.append(
+        "stake",
+        stake
+    );
+
+
+    try {
+
+        const response =
+            await fetch(
+                "{{ url_for('player_play') }}",
+                {
+                    method: "POST",
+                    body: form
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!data.success) {
+
+            alert(
+                data.message
+            );
+
+            return;
+        }
+
+
+        currentRoundId =
+            data.round_id;
+
+        currentMultiplier =
+            1.00;
+
+        roundRunning =
+            true;
+
+
+        playButton.disabled =
+            true;
+
+        collectButton.disabled =
+            false;
+
+        playerSelect.disabled =
+            true;
+
+        stakeInput.disabled =
+            true;
+
+
+        roundStatus.textContent =
+            "FLYING";
+
+        message.textContent =
+            "FLYING";
+
+
+        startMultiplier();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to start the round."
+        );
+    }
+}
+
+
+// ============================================================
+// MULTIPLIER
+// ============================================================
+
+function startMultiplier() {
+
+    if (multiplierTimer) {
+
+        clearInterval(
+            multiplierTimer
+        );
+    }
+
+
+    multiplierTimer =
+        setInterval(
+            function () {
+
+                if (!roundRunning) {
+                    return;
+                }
+
+
+                currentMultiplier +=
+                    0.01;
+
+
+                multiplierElement.textContent =
+                    currentMultiplier.toFixed(2)
+                    + "x";
+
+
+                const x =
+                    Math.min(
+                        currentMultiplier * 12,
+                        500
+                    );
+
+
+                const y =
+                    -Math.min(
+                        currentMultiplier * 5,
+                        170
+                    );
+
+
+                aircraft.style.transform =
+                    `translate(${x}px, ${y}px)`;
+
+
+            },
+            120
+        );
+}
+
+
+// ============================================================
+// COLLECT
+// ============================================================
+
+async function collectPoints() {
+
+    if (!roundRunning) {
+        return;
+    }
+
+
+    if (!currentRoundId) {
+        return;
+    }
+
+
+    const form =
+        new FormData();
+
+
+    form.append(
+        "round_id",
+        currentRoundId
+    );
+
+
+    form.append(
+        "multiplier",
+        currentMultiplier.toFixed(2)
+    );
+
+
+    try {
+
+        const response =
+            await fetch(
+                "{{ url_for('player_collect') }}",
+                {
+                    method: "POST",
+                    body: form
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!data.success) {
+
+            alert(
+                data.message
+            );
+
+            return;
+        }
+
+
+        endRound();
+
+
+        message.textContent =
+            "COLLECTED "
+            + data.points.toFixed(2)
+            + " POINTS";
+
+
+        roundStatus.textContent =
+            "COLLECTED";
+
+
+        updatePlayerBalance(
+            data.points
+        );
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to collect points."
+        );
+    }
+}
+
+
+// ============================================================
+// END ROUND
+// ============================================================
+
+function endRound() {
+
+    roundRunning =
+        false;
+
+    currentRoundId =
+        null;
+
+
+    clearInterval(
+        multiplierTimer
+    );
+
+
+    playButton.disabled =
+        false;
+
+    collectButton.disabled =
+        true;
+
+    playerSelect.disabled =
+        false;
+
+    stakeInput.disabled =
+        false;
+}
+
+
+// ============================================================
+// UPDATE PLAYER DISPLAY
+// ============================================================
+
+async function updatePlayerBalance(
+    collected
+) {
+
+    const playerId =
+        playerSelect.value;
+
+
+    if (!playerId) {
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/player/balance/${playerId}`
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!data.success) {
+            return;
+        }
+
+
+        selectedBalance.textContent =
+            Number(
+                data.balance
+            ).toFixed(2);
+
+
+        const option =
+            playerSelect.options[
+                playerSelect.selectedIndex
+            ];
+
+
+        option.dataset.balance =
+            data.balance;
+
+
+        option.text =
+            `${data.username} — ${Number(
+                data.balance
+            ).toFixed(2)} pts`;
+
+
+        const card =
+            document.getElementById(
+                `player-card-${playerId}`
+            );
+
+
+        if (card) {
+
+            const small =
+                card.querySelector("small");
+
+            if (small) {
+
+                small.textContent =
+                    `${Number(
+                        data.balance
+                    ).toFixed(2)} pts`;
+            }
+        }
+
+
+    } catch (error) {
+
+        console.error(error);
+    }
+}
+
+
+// ============================================================
+// MULTIPLAYER EVENT
+// ============================================================
+
+socket.on(
+    "player_joined",
+    function (data) {
+
+        console.log(
+            data.username
+            + " joined High Flyer"
+        );
+
+    }
+);
+
+
+// ============================================================
+// BALANCE EVENT
+// ============================================================
+
+socket.on(
+    "player_balance_updated",
+    function (data) {
+
+        console.log(
+            "Player balance updated:",
+            data.player_id
+        );
+
+    }
+);
+
 </script>
+
 {% endblock %}
