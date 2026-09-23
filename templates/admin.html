@@ -1,42 +1,186 @@
 {% extends "base.html" %}
+
 {% block content %}
+
 <div class="hero">
     <div>
         <p class="eyebrow">ADMIN PANEL</p>
+
         <h1>Welcome, {{ admin.username }}</h1>
-        <p>Manage your players and open the live game.</p>
+
+        <p>
+            Manage your players and their game points.
+        </p>
     </div>
-    <a class="button" href="{{ url_for('game') }}">OPEN GAME</a>
+
+    <a class="button" href="{{ url_for('game') }}">
+        OPEN GAME
+    </a>
 </div>
+
+
+<!-- ADMIN FLOAT -->
 
 <div class="stat">
     <span>AVAILABLE FLOAT</span>
-    <strong>KES {{ "%.2f"|format(admin.balance) }}</strong>
+
+    <strong>
+        {{ "%.2f"|format(admin.balance) }} POINTS
+    </strong>
 </div>
 
-<section class="card">
-    <h2>Add Player</h2>
-    <form method="post" action="{{ url_for('create_player') }}" class="inline-form">
-        <input name="username" placeholder="Player username" required>
-        <button>ADD PLAYER</button>
-    </form>
-</section>
+
+<!-- CREATE PLAYER -->
 
 <section class="card">
-    <h2>Players</h2>
-    <div class="table">
-        <div class="row head">
-            <span>Player</span><span>Balance</span><span>Status</span>
-        </div>
-        {% for player in players %}
-        <div class="row">
-            <span>{{ player.username }}</span>
-            <span>KES {{ "%.2f"|format(player.balance) }}</span>
-            <span class="status">{{ "ACTIVE" if player.active else "INACTIVE" }}</span>
-        </div>
-        {% else %}
-        <div class="empty">No players yet.</div>
-        {% endfor %}
-    </div>
+
+    <h2>Add Player</h2>
+
+    <form
+        method="post"
+        action="{{ url_for('create_player') }}"
+        class="inline-form"
+    >
+
+        <input
+            name="username"
+            placeholder="Player username"
+            required
+        >
+
+        <button type="submit">
+            ADD PLAYER
+        </button>
+
+    </form>
+
 </section>
+
+
+<!-- PLAYERS -->
+
+<section class="card">
+
+    <h2>Players</h2>
+
+    <div class="table">
+
+        <div class="row head">
+            <span>Player</span>
+            <span>Balance</span>
+            <span>Status</span>
+            <span>Add Points</span>
+        </div>
+
+
+        {% for player in players %}
+
+        <div class="row">
+
+            <!-- PLAYER -->
+
+            <span>
+                {{ player.username }}
+            </span>
+
+
+            <!-- BALANCE -->
+
+            <span>
+
+                <strong>
+                    {{ "%.2f"|format(player.balance) }}
+                </strong>
+
+                pts
+
+            </span>
+
+
+            <!-- STATUS -->
+
+            <span class="status">
+
+                {{ "ACTIVE" if player.active else "INACTIVE" }}
+
+            </span>
+
+
+            <!-- ADD POINTS -->
+
+            <span>
+
+                {% if player.active %}
+
+                <form
+                    method="post"
+                    action="{{ url_for('add_player_points') }}"
+                    class="inline-form"
+                >
+
+                    <input
+                        type="hidden"
+                        name="player_id"
+                        value="{{ player.id }}"
+                    >
+
+                    <input
+                        type="number"
+                        name="amount"
+                        min="10"
+                        step="1"
+                        placeholder="10+"
+                        required
+                        style="width:90px;"
+                    >
+
+                    <button type="submit">
+                        ADD
+                    </button>
+
+                </form>
+
+                {% else %}
+
+                <span>
+                    INACTIVE
+                </span>
+
+                {% endif %}
+
+            </span>
+
+        </div>
+
+        {% else %}
+
+        <div class="empty">
+            No players yet.
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+
+<!-- INFORMATION -->
+
+<section class="card">
+
+    <h2>Game Points</h2>
+
+    <p>
+        Player balances are non-redeemable game points.
+        The minimum allocation is 10 points.
+    </p>
+
+    <p>
+        Points allocated to a player are deducted from
+        your available admin float.
+    </p>
+
+</section>
+
 {% endblock %}
