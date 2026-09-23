@@ -36,9 +36,114 @@
                 ✦
             </div>
 
-            <div id="aircraft">
-                ✈
-            </div>
+           <div id="aircraft" class="aircraft">
+
+    <svg viewBox="0 0 220 100" aria-label="High Flyer aircraft">
+        <defs>
+            <linearGradient id="planeBody" x1="0" x2="1">
+                <stop offset="0%" stop-color="#ffffff"/>
+                <stop offset="55%" stop-color="#e8f3ff"/>
+                <stop offset="100%" stop-color="#ff3d4f"/>
+            </linearGradient>
+
+            <linearGradient id="planeWing" x1="0" x2="1">
+                <stop offset="0%" stop-color="#ff3048"/>
+                <stop offset="100%" stop-color="#ffd34d"/>
+            </linearGradient>
+        </defs>
+
+        <!-- Glow -->
+        <ellipse
+            cx="105"
+            cy="58"
+            rx="82"
+            ry="20"
+            fill="rgba(255,190,40,.18)"
+        />
+
+        <!-- Main body -->
+        <path
+            d="M18 48
+               C52 45 86 39 124 29
+               L181 14
+               C194 11 207 17 210 25
+               C205 31 196 34 184 35
+               L137 42
+               C109 47 78 55 48 63
+               L25 68
+               C17 69 12 64 18 48Z"
+            fill="url(#planeBody)"
+        />
+
+        <!-- Upper wing -->
+        <path
+            d="M92 40
+               L132 3
+               C137 -1 144 1 141 7
+               L120 45Z"
+            fill="url(#planeWing)"
+        />
+
+        <!-- Lower wing -->
+        <path
+            d="M103 48
+               L143 78
+               C148 82 143 87 137 84
+               L91 55Z"
+            fill="url(#planeWing)"
+        />
+
+        <!-- Tail -->
+        <path
+            d="M34 49
+               L9 25
+               C5 21 9 17 14 20
+               L52 42Z"
+            fill="#ff4052"
+        />
+
+        <!-- Cockpit -->
+        <path
+            d="M139 28
+               C151 17 166 15 178 18
+               L165 31Z"
+            fill="#163d73"
+        />
+
+        <!-- Cockpit shine -->
+        <path
+            d="M148 24 L160 20 L154 28Z"
+            fill="#8bdcff"
+        />
+
+        <!-- Nose -->
+        <circle
+            cx="199"
+            cy="25"
+            r="8"
+            fill="#ffcc38"
+        />
+
+        <!-- Propeller -->
+        <ellipse
+            cx="207"
+            cy="25"
+            rx="4"
+            ry="27"
+            fill="rgba(255,255,255,.65)"
+        />
+
+        <ellipse
+            cx="207"
+            cy="25"
+            rx="27"
+            ry="4"
+            fill="rgba(255,255,255,.55)"
+        />
+
+    </svg>
+
+           </div> 
 
         </div>
 
