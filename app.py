@@ -603,6 +603,96 @@ def add_player_points():
     return redirect(url_for("dashboard"))
 
 
+@app.route("/player/withdraw-points", methods=["POST"])
+def withdraw_player_points():
+    if session.get("role") != "admin":
+        return redirect(url_for("login"))
+
+    player_id = request.form.get("player_id")
+    amount_text = request.form.get("amount", "").strip()
+
+    try:
+        amount = int(amount_text)
+    except ValueError:
+        flash("Enter a valid points amount.", "error")
+        return redirect(url_for("admin_dashboard"))
+
+    if amount <= 0:
+        flash("Points must be greater than zero.", "error")
+        return redirect(url_for("admin_dashboard"))
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    # Get the logged-in admin
+    cursor.execute(
+        "SELECT * FROM admin_accounts WHERE id = ?",
+        (session["admin_id"],)
+    )
+    admin = cursor.fetchone()
+
+    # Get the player
+    cursor.execute(
+        "SELECT * FROM players WHERE id = ?",
+        (player_id,)
+    )
+    player = cursor.fetchone()
+
+    if not admin or not player:
+        conn.close()
+        flash("Admin or player not found.", "error")
+        return redirect(url_for("admin_dashboard"))
+
+    if player["balance"] < amount:
+        conn.close()
+        flash("Player does not have enough points.", "error")
+        return redirect(url_for("admin_dashboard"))
+
+    # Remove points from player
+    cursor.execute(
+        """
+        UPDATE players
+        SET balance = balance - ?
+        WHERE id = ?
+        """,
+        (amount, player_id)
+    )
+
+    # Return points to admin float
+    cursor.execute(
+        """
+        UPDATE admin_accounts
+        SET balance = balance + ?
+        WHERE id = ?
+        """,
+        (amount, admin["id"])
+    )
+
+    # Record transaction
+    cursor.execute(
+        """
+        INSERT INTO point_transactions
+        (admin_id, player_id, amount, transaction_type, created_at)
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (
+            admin["id"],
+            player_id,
+            amount,
+            "WITHDRAW_FROM_PLAYER",
+            datetime.utcnow().isoformat()
+        )
+    )
+
+    conn.commit()
+    conn.close()
+
+    flash(
+        f"{amount:,} points returned to your float.",
+        "success"
+    )
+
+    return redirect(url_for("admin_dashboard"))
 # ============================================================
 # GAME
 # ============================================================
