@@ -222,7 +222,7 @@ def dashboard():
         "dashboard.html",
         admin=admin,
         players=players
-    )w
+    )
 
 
     # ---------------- SUPER ADMIN ----------------
