@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="hero">
+    <div>
+        <p class="eyebrow">HIGH FLYER</p>
+        <h1>Admin Dashboard</h1>
+        <p>Welcome, {{ admin.username }}.</p>
+    </div>
+
+    <a class="button" href="{{ url_for('game') }}">
+        OPEN GAME
+    </a>
+</div>
+
+
+<!-- FLOAT -->
+<section class="card">
+    <p class="eyebrow">AVAILABLE FLOAT</p>
+
+    <h2>
+        {{ "%.0f"|format(admin.balance) }} POINTS
+    </h2>
+
+    <p>
+        Points available for assigning to players.
+    </p>
+</section>
+
+
+<!-- CREATE PLAYER -->
+<section class="card">
+
+    <h2>Add Player</h2>
+
+    <form
+        method="post"
+        action="{{ url_for('create_player') }}"
+        class="inline-form"
+    >
+
+        <input
+            type="text"
+            name="username"
+            placeholder="Player username"
+            required
+        >
+
+        <button type="submit">
+            ADD PLAYER
+        </button>
+
+    </form>
+
+</section>
+
+
+<!-- PLAYERS -->
+<section class="card">
+
+    <h2>Players</h2>
+
+    <div class="table">
+
+        <div class="row head">
+            <span>Player</span>
+            <span>Points</span>
+            <span>Status</span>
+            <span>Actions</span>
+        </div>
+
+
+        {% for player in players %}
+
+        <div class="row">
+
+            <span>
+                {{ player.username }}
+            </span>
+
+            <span>
+                {{ "%.0f"|format(player.balance) }} points
+            </span>
+
+            <span class="status">
+                {{ "ACTIVE" if player.active else "INACTIVE" }}
+            </span>
+
+
+            <span>
+
+                <!-- ADD POINTS -->
+
+                <form
+                    method="post"
+                    action="{{ url_for('add_player_points') }}"
+                    class="inline-form"
+                >
+
+                    <input
+                        type="hidden"
+                        name="player_id"
+                        value="{{ player.id }}"
+                    >
+
+                    <input
+                        type="number"
+                        name="amount"
+                        min="1"
+                        placeholder="Points"
+                        required
+                    >
+
+                    <button type="submit">
+                        ADD
+                    </button>
+
+                </form>
+
+
+                <!-- WITHDRAW POINTS -->
+
+                <form
+                    method="post"
+                    action="{{ url_for('withdraw_player_points') }}"
+                    class="inline-form"
+                >
+
+                    <input
+                        type="hidden"
+                        name="player_id"
+                        value="{{ player.id }}"
+                    >
+
+                    <input
+                        type="number"
+                        name="amount"
+                        min="1"
+                        placeholder="Points"
+                        required
+                    >
+
+                    <button type="submit">
+                        WITHDRAW
+                    </button>
+
+                </form>
+
+            </span>
+
+        </div>
+
+        {% else %}
+
+        <div class="empty">
+            No players have been created yet.
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+
+<!-- INFO -->
+
+<section class="card">
+
+    <h2>Points System</h2>
+
+    <p>
+        Adding points decreases your admin float and gives
+        points to the selected player.
+    </p>
+
+    <p>
+        Withdrawing points removes them from the player and
+        returns them to your admin float.
+    </p>
+
+    <p>
+        These are game points only and have no cash value.
+    </p>
+
+</section>
+
+{% endblock %}
