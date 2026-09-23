@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="login-card">
+    <div class="logo-orb">HF</div>
+    <h1>High Flyer</h1>
+    <p>Multiplayer control platform</p>
+    <form method="post" action="{{ url_for('login') }}">
+        <input name="username" placeholder="Username" required>
+        <input name="password" type="password" placeholder="Password" required>
+        <button>LOGIN</button>
+    </form>
+    <small>Initial Super Admin: owner / ChangeMe123!</small>
+</div>
+{% endblock %}
