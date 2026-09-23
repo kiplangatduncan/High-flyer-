@@ -131,3 +131,608 @@ button, .button {
     .inline-form { flex-direction: column; }
     .game-stage { height: 420px; }
 }
+
+/* ============================================================
+   HIGH FLYER — CINEMATIC GAME DESIGN
+   ============================================================ */
+
+.game-shell {
+    position: relative;
+    min-height: calc(100vh - 40px);
+    overflow: hidden;
+    border-radius: 28px;
+    padding: 20px;
+    background:
+        radial-gradient(circle at 82% 25%, rgba(255,185,70,.35), transparent 22%),
+        radial-gradient(circle at 15% 40%, rgba(70,150,255,.35), transparent 30%),
+        linear-gradient(
+            180deg,
+            #061c54 0%,
+            #0751a5 35%,
+            #168fd2 58%,
+            #ff9d58 78%,
+            #071b43 100%
+        );
+    box-shadow:
+        0 25px 80px rgba(0,0,0,.45),
+        inset 0 0 100px rgba(0,80,180,.25);
+}
+
+
+/* SKY */
+
+.game-stage {
+    position: relative;
+    min-height: 560px;
+    overflow: hidden;
+    border-radius: 22px;
+    background:
+        radial-gradient(
+            circle at 82% 65%,
+            rgba(255,225,120,.9) 0,
+            rgba(255,150,80,.35) 9%,
+            transparent 28%
+        ),
+        linear-gradient(
+            180deg,
+            #06205d 0%,
+            #0872c8 45%,
+            #f47e63 100%
+        );
+}
+
+
+/* SUN */
+
+.game-stage::after {
+    content: "";
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    right: 8%;
+    bottom: 12%;
+    border-radius: 50%;
+    background: #ffd875;
+    box-shadow:
+        0 0 35px #ffd875,
+        0 0 100px rgba(255,180,70,.7);
+    opacity: .9;
+}
+
+
+/* CLOUDS */
+
+.cloud {
+    position: absolute;
+    width: 260px;
+    height: 75px;
+    border-radius: 100px;
+    background: rgba(255,255,255,.24);
+    filter: blur(5px);
+}
+
+.cloud::before,
+.cloud::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    background: inherit;
+}
+
+.cloud::before {
+    width: 110px;
+    height: 110px;
+    left: 45px;
+    bottom: 10px;
+}
+
+.cloud::after {
+    width: 90px;
+    height: 90px;
+    right: 35px;
+    bottom: 5px;
+}
+
+.c1 {
+    top: 18%;
+    left: -60px;
+    animation: cloudMove 35s linear infinite;
+}
+
+.c2 {
+    top: 42%;
+    right: -100px;
+    transform: scale(.75);
+    animation: cloudMoveReverse 45s linear infinite;
+}
+
+@keyframes cloudMove {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(900px);
+    }
+}
+
+@keyframes cloudMoveReverse {
+    from {
+        transform: translateX(0) scale(.75);
+    }
+
+    to {
+        transform: translateX(-900px) scale(.75);
+    }
+}
+
+
+/* DISTANT LAND */
+
+.game-stage::before {
+    content: "";
+    position: absolute;
+    left: -5%;
+    right: -5%;
+    bottom: 0;
+    height: 130px;
+    background:
+        linear-gradient(
+            145deg,
+            transparent 0 18%,
+            #102d55 19% 25%,
+            transparent 26% 37%,
+            #0b2449 38% 48%,
+            transparent 49% 60%,
+            #091b3b 61%
+        );
+    opacity: .9;
+}
+
+
+/* PLANE */
+
+.aircraft {
+    position: absolute;
+    z-index: 8;
+    left: 25%;
+    top: 35%;
+    width: 210px;
+    height: 100px;
+
+    filter:
+        drop-shadow(0 8px 12px rgba(0,0,0,.35))
+        drop-shadow(0 0 18px rgba(255,180,60,.65));
+
+    transform-origin: center;
+    transition: transform .12s linear;
+}
+
+
+/* PLANE SVG */
+
+.aircraft svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+
+/* FLIGHT TRAIL */
+
+.aircraft::after {
+    content: "";
+    position: absolute;
+    width: 430px;
+    height: 8px;
+    right: 75%;
+    top: 55%;
+    border-radius: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,235,120,.15),
+        #ffd24d,
+        #fff
+    );
+    filter: blur(4px);
+    transform: rotate(-12deg);
+    transform-origin: right center;
+    animation: trailPulse .7s infinite alternate;
+}
+
+@keyframes trailPulse {
+    from {
+        opacity: .45;
+        width: 300px;
+    }
+
+    to {
+        opacity: 1;
+        width: 470px;
+    }
+}
+
+
+/* TOP BAR */
+
+.game-top {
+    position: absolute;
+    z-index: 20;
+    top: 35px;
+    left: 40px;
+    right: 40px;
+
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    pointer-events: none;
+}
+
+
+/* MULTIPLIER */
+
+.multiplier {
+    grid-column: 2;
+
+    min-width: 260px;
+    padding: 16px 35px;
+
+    text-align: center;
+
+    border: 1px solid rgba(30,190,255,.7);
+    border-radius: 24px;
+
+    background: rgba(2,22,70,.78);
+
+    color: #ffd83d;
+    font-size: 42px;
+    font-weight: 900;
+
+    text-shadow:
+        0 0 15px rgba(255,210,50,.8);
+
+    box-shadow:
+        0 0 30px rgba(0,180,255,.25),
+        inset 0 0 25px rgba(0,100,255,.18);
+
+    backdrop-filter: blur(10px);
+}
+
+
+/* LIVE */
+
+.live {
+    justify-self: end;
+
+    padding: 12px 20px;
+    border-radius: 20px;
+
+    background: rgba(1,20,60,.8);
+
+    color: white;
+    font-weight: 800;
+
+    box-shadow:
+        0 0 20px rgba(0,255,140,.15);
+}
+
+.live::first-letter {
+    color: #21ff87;
+}
+
+
+/* BRAND */
+
+.brand-small {
+    position: absolute;
+    left: 0;
+    top: 8px;
+
+    color: white;
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: 2px;
+
+    text-shadow:
+        0 0 15px rgba(255,210,50,.4);
+}
+
+
+/* GAME MESSAGE */
+
+.game-message {
+    position: absolute;
+    z-index: 15;
+
+    left: 50%;
+    bottom: 35px;
+
+    transform: translateX(-50%);
+
+    min-width: 320px;
+    padding: 16px 30px;
+
+    text-align: center;
+
+    border-radius: 30px;
+
+    background: rgba(1,20,65,.72);
+    border: 1px solid rgba(40,190,255,.5);
+
+    color: white;
+    font-size: 19px;
+    font-weight: 800;
+
+    backdrop-filter: blur(12px);
+}
+
+
+/* CONTROL PANEL */
+
+.game-controls {
+    position: relative;
+    z-index: 30;
+
+    margin-top: -5px;
+
+    border-radius: 24px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(2,26,80,.96),
+            rgba(4,55,125,.9)
+        );
+
+    border: 1px solid rgba(30,180,255,.6);
+
+    box-shadow:
+        0 15px 45px rgba(0,0,0,.35),
+        inset 0 0 30px rgba(0,130,255,.12);
+
+    backdrop-filter: blur(15px);
+}
+
+
+.game-controls h2 {
+    color: white;
+    margin-bottom: 20px;
+}
+
+
+.game-controls input,
+.game-controls select {
+    background: rgba(3,25,70,.9);
+    border: 1px solid rgba(50,180,255,.6);
+    color: white;
+    border-radius: 12px;
+    padding: 14px;
+}
+
+
+/* PLAY BUTTON */
+
+#playButton {
+    background:
+        linear-gradient(
+            135deg,
+            #13e66c,
+            #00a94f
+        );
+
+    border: none;
+
+    color: white;
+    font-weight: 900;
+
+    padding: 14px 30px;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 0 20px rgba(20,255,120,.45);
+
+    cursor: pointer;
+
+    transition: .2s;
+}
+
+#playButton:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow:
+        0 0 30px rgba(20,255,120,.7);
+}
+
+
+/* COLLECT */
+
+#collectButton {
+    padding: 14px 30px;
+
+    border-radius: 14px;
+
+    border: 1px solid #21aaff;
+
+    background: rgba(0,90,180,.5);
+
+    color: white;
+    font-weight: 900;
+
+    cursor: pointer;
+
+    transition: .2s;
+}
+
+#collectButton:not(:disabled):hover {
+    background: #087bd1;
+
+    box-shadow:
+        0 0 25px rgba(0,170,255,.65);
+}
+
+#collectButton:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}
+
+
+/* GAME INFORMATION */
+
+.game-info {
+    display: flex;
+    gap: 25px;
+    flex-wrap: wrap;
+
+    margin-top: 20px;
+
+    color: #cdeaff;
+}
+
+.game-info strong {
+    color: white;
+}
+
+
+/* PLAYER CARDS */
+
+.player-strip {
+    position: relative;
+    z-index: 30;
+
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(150px, 1fr)
+    );
+
+    gap: 12px;
+
+    margin-top: 15px;
+}
+
+
+.player-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 15px;
+
+    border-radius: 16px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(2,30,80,.92),
+            rgba(3,60,120,.75)
+        );
+
+    border: 1px solid rgba(30,160,255,.4);
+
+    color: white;
+
+    box-shadow:
+        0 8px 25px rgba(0,0,0,.25);
+
+    transition: .2s;
+}
+
+
+.player-card:hover {
+    transform: translateY(-3px);
+
+    border-color: #22baff;
+
+    box-shadow:
+        0 10px 30px rgba(0,170,255,.25);
+}
+
+
+.player-card .number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 34px;
+    height: 34px;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffd22f,
+            #ff8c00
+        );
+
+    color: #162344;
+    font-weight: 900;
+}
+
+
+.player-card small {
+    display: block;
+    margin-top: 4px;
+    color: #9fd9ff;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 800px) {
+
+    .game-shell {
+        padding: 10px;
+        border-radius: 16px;
+    }
+
+    .game-stage {
+        min-height: 470px;
+    }
+
+    .game-top {
+        left: 15px;
+        right: 15px;
+        top: 20px;
+    }
+
+    .brand-small {
+        font-size: 17px;
+        top: 5px;
+    }
+
+    .multiplier {
+        min-width: 145px;
+        padding: 10px 15px;
+        font-size: 28px;
+    }
+
+    .live {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    .aircraft {
+        width: 145px;
+        left: 28%;
+        top: 38%;
+    }
+
+    .game-message {
+        min-width: 230px;
+        font-size: 14px;
+        bottom: 25px;
+    }
+
+    .player-strip {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .game-info {
+        gap: 10px;
+        font-size: 13px;
+    }
+
+}
