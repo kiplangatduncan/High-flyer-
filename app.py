@@ -670,10 +670,12 @@ def withdraw_player_points():
         (amount, admin["id"])
     )
 
-# Record transaction
+
+
+    # Record transaction
 @app.route("/player/withdraw-points", methods=["POST"])
 @login_required
-
+def withdraw_player_points():
 
     if session["role"] != "admin":
         flash("Only admins can withdraw player points.", "error")
@@ -690,33 +692,47 @@ def withdraw_player_points():
         flash("Points must be greater than zero.", "error")
         return redirect(url_for("dashboard"))
 
-    # Remove points from player
+    conn = db()
+
+    player = conn.execute(
+        """
+        SELECT *
+        FROM players
+        WHERE id = ?
+        AND admin_id = ?
+        AND active = 1
+        """,
+        (player_id, session["user_id"])
+    ).fetchone()
+
+    if not player:
+        conn.close()
+        flash("Player not found.", "error")
+        return redirect(url_for("dashboard"))
+
+    if player["balance"] < amount:
+        conn.close()
+        flash("Player does not have enough points.", "error")
+        return redirect(url_for("dashboard"))
+
     conn.execute(
         """
         UPDATE players
         SET balance = balance - ?
         WHERE id = ?
         """,
-        (
-            amount,
-            player_id
-        )
+        (amount, player_id)
     )
 
-    # Return points to this admin's float
     conn.execute(
         """
         UPDATE admin_accounts
         SET balance = balance + ?
         WHERE user_id = ?
         """,
-        (
-            amount,
-            session["user_id"]
-        )
+        (amount, session["user_id"])
     )
 
-    # Record transaction
     conn.execute(
         """
         INSERT INTO point_transactions
