@@ -197,33 +197,12 @@ def logout():
 # ============================================================
 # DASHBOARD
 # ============================================================
+
 @app.route("/dashboard")
+@login_required
 def dashboard():
-    if "user_id" not in session:
-        return redirect(url_for("login"))
 
-    conn = get_db()
-    cursor = conn.cursor()
-
-    cursor.execute(
-        "SELECT * FROM admin_accounts WHERE id = ?",
-        (session["admin_id"],)
-    )
-    admin = cursor.fetchone()
-
-    cursor.execute(
-        "SELECT * FROM players ORDER BY id DESC"
-    )
-    players = cursor.fetchall()
-
-    conn.close()
-
-    return render_template(
-        "dashboard.html",
-        admin=admin,
-        players=players
-    )
-
+    conn = db()
 
     # ---------------- SUPER ADMIN ----------------
 
@@ -256,7 +235,9 @@ def dashboard():
     admin = conn.execute(
         """
         SELECT
+            u.id,
             u.username,
+            a.id AS admin_account_id,
             a.balance
         FROM users u
         JOIN admin_accounts a
@@ -279,7 +260,7 @@ def dashboard():
     conn.close()
 
     return render_template(
-        "admin.html",
+        "dashboard.html",
         admin=admin,
         players=players
     )
@@ -690,17 +671,95 @@ def withdraw_player_points():
     )
 
     # Record transaction
-    cursor.execute(
+    @app.route("/player/withdraw-points", methods=["POST"])
+@login_required
+def withdraw_player_points():
+
+    if session["role"] != "admin":
+        flash("Only admins can withdraw player points.", "error")
+        return redirect(url_for("dashboard"))
+
+    try:
+        player_id = int(request.form["player_id"])
+        amount = float(request.form["amount"])
+    except (ValueError, TypeError):
+        flash("Invalid player or amount.", "error")
+        return redirect(url_for("dashboard"))
+
+    if amount <= 0:
+        flash("Points must be greater than zero.", "error")
+        return redirect(url_for("dashboard"))
+
+    conn = db()
+
+    player = conn.execute(
+        """
+        SELECT *
+        FROM players
+        WHERE id = ?
+        AND admin_id = ?
+        AND active = 1
+        """,
+        (
+            player_id,
+            session["user_id"]
+        )
+    ).fetchone()
+
+    if not player:
+        conn.close()
+        flash("Player not found.", "error")
+        return redirect(url_for("dashboard"))
+
+    if player["balance"] < amount:
+        conn.close()
+        flash("Player does not have enough points.", "error")
+        return redirect(url_for("dashboard"))
+
+    # Remove points from player
+    conn.execute(
+        """
+        UPDATE players
+        SET balance = balance - ?
+        WHERE id = ?
+        """,
+        (
+            amount,
+            player_id
+        )
+    )
+
+    # Return points to this admin's float
+    conn.execute(
+        """
+        UPDATE admin_accounts
+        SET balance = balance + ?
+        WHERE user_id = ?
+        """,
+        (
+            amount,
+            session["user_id"]
+        )
+    )
+
+    # Record transaction
+    conn.execute(
         """
         INSERT INTO point_transactions
-        (admin_id, player_id, amount, transaction_type, created_at)
+        (
+            player_id,
+            admin_id,
+            amount,
+            transaction_type,
+            created_at
+        )
         VALUES (?, ?, ?, ?, ?)
         """,
         (
-            admin["id"],
             player_id,
+            session["user_id"],
             amount,
-            "WITHDRAW_FROM_PLAYER",
+            "withdraw_from_player",
             datetime.utcnow().isoformat()
         )
     )
@@ -709,11 +768,11 @@ def withdraw_player_points():
     conn.close()
 
     flash(
-        f"{amount:,} points returned to your float.",
+        f"{amount:g} points returned to your float.",
         "success"
     )
 
-    return redirect(url_for("admin_dashboard"))
+    return redirect(url_for("dashboard"))
 # ============================================================
 # GAME
 # ============================================================
