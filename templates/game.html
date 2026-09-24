@@ -516,55 +516,52 @@ async function startRound() {
 function startMultiplier() {
 
     if (multiplierTimer) {
-
-        clearInterval(
-            multiplierTimer
-        );
+        clearInterval(multiplierTimer);
     }
 
+    currentMultiplier = 1.00;
 
-    multiplierTimer =
-        setInterval(
-            function () {
+    multiplierEl.textContent =
+        currentMultiplier.toFixed(2) + "x";
 
-                if (!roundRunning) {
-                    return;
-                }
+    roundRunning = true;
 
+    multiplierTimer = setInterval(() => {
 
-                currentMultiplier +=
-                    0.01;
+        if (!roundRunning) {
+            clearInterval(multiplierTimer);
+            multiplierTimer = null;
+            return;
+        }
 
+        currentMultiplier += 0.01;
 
-                multiplierElement.textContent =
-                    currentMultiplier.toFixed(2)
-                    + "x";
+        multiplierEl.textContent =
+            currentMultiplier.toFixed(2) + "x";
 
+        const aircraft =
+            document.getElementById("aircraft");
 
-                const x =
-                    Math.min(
-                        currentMultiplier * 12,
-                        500
-                    );
+        if (aircraft) {
 
+            const x =
+                Math.min(
+                    currentMultiplier * 12,
+                    500
+                );
 
-                const y =
-                    -Math.min(
-                        currentMultiplier * 5,
-                        170
-                    );
+            const y =
+                -Math.min(
+                    currentMultiplier * 5,
+                    170
+                );
 
+            aircraft.style.transform =
+                `translate(${x}px, ${y}px)`;
+        }
 
-                aircraft.style.transform =
-                    `translate(${x}px, ${y}px)`;
-
-
-            },
-            120
-        );
+    }, 120);
 }
-
-
 // ============================================================
 // COLLECT
 // ============================================================
