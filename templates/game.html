@@ -803,15 +803,61 @@ socket.on(
 {% endblock %}
 a
 // ============================================================
-// AUTOMATIC PLANE FLIGHT
+// AUTO START HIGH FLYER
 // ============================================================
 
-window.addEventListener("load", () => {
+function autoStartFlight() {
+
+    if (typeof multiplierEl === "undefined") {
+        console.error("Multiplier element not found");
+        return;
+    }
+
+    if (typeof aircraft === "undefined") {
+        console.error("Aircraft element not found");
+        return;
+    }
+
+    if (multiplierTimer) {
+        clearInterval(multiplierTimer);
+    }
+
     currentMultiplier = 1.00;
+    roundRunning = true;
 
     multiplierEl.textContent = "1.00x";
 
-    roundRunning = true;
+    multiplierTimer = setInterval(function () {
 
-    startMultiplier();
-});
+        if (!roundRunning) {
+            clearInterval(multiplierTimer);
+            multiplierTimer = null;
+            return;
+        }
+
+        currentMultiplier += 0.01;
+
+        multiplierEl.textContent =
+            currentMultiplier.toFixed(2) + "x";
+
+        const x = Math.min(
+            (currentMultiplier - 1) * 25,
+            500
+        );
+
+        const y = -Math.min(
+            (currentMultiplier - 1) * 12,
+            250
+        );
+
+        aircraft.style.transform =
+            "translate(" + x + "px, " + y + "px)";
+
+    }, 120);
+}
+
+
+// Start automatically after the page has loaded
+setTimeout(function () {
+    autoStartFlight();
+}, 500);
