@@ -1,4 +1,4 @@
-* { box-sizing: border-box; }
+ { box-sizing: border-box; }
 body {
     margin: 0;
     font-family: Arial, sans-serif;
@@ -735,4 +735,44 @@ button, .button {
         font-size: 13px;
     }
 
+}
+/* ============================================================
+   AUTOMATIC DEMO FLIGHT
+   ============================================================ */
+
+.aircraft {
+    animation: highFlyerFlight 8s ease-in-out infinite;
+}
+
+@keyframes highFlyerFlight {
+
+    0% {
+        left: 8%;
+        top: 65%;
+        transform: rotate(-5deg) scale(0.85);
+    }
+
+    25% {
+        left: 25%;
+        top: 55%;
+        transform: rotate(-10deg) scale(0.95);
+    }
+
+    50% {
+        left: 48%;
+        top: 40%;
+        transform: rotate(-8deg) scale(1.05);
+    }
+
+    75% {
+        left: 70%;
+        top: 25%;
+        transform: rotate(-12deg) scale(1.15);
+    }
+
+    100% {
+        left: 92%;
+        top: 8%;
+        transform: rotate(-15deg) scale(1.25);
+    }
 }
