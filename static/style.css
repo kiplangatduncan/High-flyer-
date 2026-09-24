@@ -776,3 +776,35 @@ button, .button {
         transform: rotate(-15deg) scale(1.25);
     }
 }
+/* ============================================================
+   FLIGHT VISIBILITY FIX
+   ============================================================ */
+
+.game-stage {
+    isolation: isolate;
+}
+
+/* Keep the scenery behind the aircraft */
+.game-stage::before,
+.game-stage::after {
+    z-index: 0;
+}
+
+.sky {
+    z-index: 1;
+}
+
+/* Aircraft must always be above scenery/overlays */
+.aircraft,
+#aircraft {
+    z-index: 50 !important;
+    pointer-events: none;
+}
+
+/* Make the aircraft area transparent */
+.aircraft svg {
+    background: transparent !important;
+}
+.game-stage > .sky {
+    background: transparent !important;
+}
