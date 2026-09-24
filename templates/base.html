@@ -1,34 +1,68 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>High Flyer</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <title>{% block title %}High Flyer{% endblock %}</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
+
 <header class="topbar">
-    <div class="brand">HIGH <span>FLYER</span></div>
+
+    <div class="brand">
+        HIGH <span>FLYER</span>
+    </div>
+
     {% if session.get("user_id") %}
     <div class="userbox">
-        {{ session.get("username") }} · {{ session.get("role") }}
-        <a href="{{ url_for('logout') }}">Logout</a>
+
+        <span>
+            {{ session.get("username") }}
+            ·
+            {{ session.get("role") }}
+        </span>
+
+        <a href="{{ url_for('logout') }}">
+            Logout
+        </a>
+
     </div>
     {% endif %}
+
 </header>
 
 {% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
+
+    {% if messages %}
+
     <div class="messages">
-      {% for category, message in messages %}
-        <div class="message {{ category }}">{{ message }}</div>
-      {% endfor %}
+
+        {% for category, message in messages %}
+
+        <div class="message {{ category }}">
+            {{ message }}
+        </div>
+
+        {% endfor %}
+
     </div>
-  {% endif %}
+
+    {% endif %}
+
 {% endwith %}
 
+
 <main class="page">
-{% block content %}{% endblock %}
+
+    {% block content %}{% endblock %}
+
 </main>
+
+
 </body>
 </html>
