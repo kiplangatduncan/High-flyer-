@@ -144,10 +144,8 @@ def super_admin_required(fn):
 
 @app.route("/")
 def home():
-    if "user_id" in session:
-        return redirect(url_for("dashboard"))
-
-    return render_template("login.html")
+    # Public High Flyer game
+    return redirect(url_for("game"))
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -769,34 +767,23 @@ def withdraw_player_points():
 # ============================================================
 
 @app.route("/game")
-@login_required
 def game():
-
     conn = db()
 
-    if session["role"] == "admin":
+    players = conn.execute("""
+        SELECT id, username, balance
+        FROM players
+        WHERE active = 1
+        ORDER BY id
+    """).fetchall()
 
-        players = conn.execute(
-            """
-            SELECT
-                p.id,
-                p.username,
-                p.balance
-            FROM players p
-            WHERE p.admin_id = ?
-            AND p.active = 1
-            ORDER BY p.id
-            """,
-            (session["user_id"],)
-        ).fetchall()
+    conn.close()
 
-        conn.close()
-
-        return render_template(
-            "game.html",
-            players=players,
-            role="admin"
-        )
+    return render_template(
+        "game.html",
+        players=players,
+        role="player"
+    )
 
     # A player account can be supported by session later.
     conn.close()
