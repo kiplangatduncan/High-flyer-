@@ -112,6 +112,9 @@ def init_db():
     conn.close()
 
 
+# Initialize database when the app starts
+init_db()
+
 # ============================================================
 # AUTHENTICATION
 # ============================================================
