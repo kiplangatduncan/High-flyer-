@@ -805,33 +805,66 @@ a
 // ============================================================
 // AUTO START HIGH FLYER
 // ============================================================
-function autoStartFlight() {
+// HIGH FLYER DEMO — AUTOMATIC FLIGHT + MULTIPLIER
+// ============================================================
 
-    if (multiplierTimer) {
-        clearInterval(multiplierTimer);
+const multiplierDisplay =
+    document.querySelector(".multiplier");
+
+const plane =
+    document.querySelector("#aircraft") ||
+    document.querySelector(".aircraft");
+
+let demoMultiplier = 1.00;
+
+function runDemoFlight() {
+
+    demoMultiplier = 1.00;
+
+    if (multiplierDisplay) {
+        multiplierDisplay.textContent = "1.00x";
     }
 
-    currentMultiplier = 1.00;
-    roundRunning = true;
+    let step = 0;
 
-    if (multiplierEl) {
-        multiplierEl.textContent = "1.00x";
-    }
+    const timer = setInterval(() => {
 
-    multiplierTimer = setInterval(function () {
+        step++;
 
-        if (!roundRunning) {
-            clearInterval(multiplierTimer);
-            multiplierTimer = null;
-            return;
+        demoMultiplier += 0.01;
+
+        if (multiplierDisplay) {
+            multiplierDisplay.textContent =
+                demoMultiplier.toFixed(2) + "x";
         }
 
-        currentMultiplier += 0.01;
+        // Move the plane independently of the multiplier
+        if (plane) {
 
-        if (multiplierEl) {
-            multiplierEl.textContent =
-                currentMultiplier.toFixed(2) + "x";
+            const progress = Math.min(step / 500, 1);
+
+            const x = progress * 700;
+            const y = progress * -300;
+
+            plane.style.transform =
+                `translate(${x}px, ${y}px) rotate(-8deg)`;
         }
 
-    }, 120);
+        // Restart after reaching the end
+        if (step >= 500) {
+
+            clearInterval(timer);
+
+            setTimeout(() => {
+                runDemoFlight();
+            }, 1000);
+        }
+
+    }, 100);
 }
+
+
+// Start after page loads
+window.addEventListener("load", () => {
+    setTimeout(runDemoFlight, 500);
+});
