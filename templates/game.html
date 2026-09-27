@@ -36,54 +36,25 @@
 
 
             <!-- AIRCRAFT -->
-            <div id="aircraft" class="aircraft">
-
-                <svg
-                    viewBox="0 0 220 100"
-                    aria-label="High Flyer aircraft"
-                >
-
-                    <defs>
-
-                        <linearGradient
-                            id="planeBody"
-                            x1="0"
-                            x2="1"
-                        >
-                            <stop
-                                offset="0%"
-                                stop-color="#ffffff"
-                            />
-
-                            <stop
-                                offset="55%"
-                                stop-color="#e8f3ff"
-                            />
-
-                            <stop
-                                offset="100%"
-                                stop-color="#ff3d4f"
-                            />
-                        </linearGradient>
-
-
-                        <linearGradient
-                            id="planeWing"
-                            x1="0"
-                            x2="1"
-                        >
-                            <stop
-                                offset="0%"
-                                stop-color="#ff3048"
-                            />
-
-                            <stop
-                                offset="100%"
-                                stop-color="#ffd34d"
-                            />
-                        </linearGradient>
-
-                    </defs>
+            .aircraft {
+    position: absolute;
+    left: 20px;
+    top: 45%;
+    z-index: 50;
+    width: 150px;
+    height: auto;
+    display: block;
+    visibility: visible;
+    opacity: 1;
+    pointer-events: none;
+    filter: drop-shadow(0 0 10px rgba(80, 180, 255, .9));
+    will-change: transform;
+}
+            .aircraft svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
 
 
                     <!-- Glow -->
@@ -96,7 +67,7 @@
                     />
 
 
-                    <!-- Main body -->
+       w             <!-- Main body -->
                     <path
                         d="M18 48
                            C52 45 86 39 124 29
@@ -816,6 +787,8 @@ function runDemoFlight() {
     let demoMultiplier = 1.00;
 
     if (aircraft) {
+        aircraft.style.left = "20px";
+        aircraft.style.top = "45%";
         aircraft.style.transform =
             "translate(0px, 0px) rotate(-8deg)";
     }
@@ -837,6 +810,7 @@ function runDemoFlight() {
         }
 
         step++;
+
         demoMultiplier += 0.01;
 
         if (multiplierElement) {
@@ -849,8 +823,11 @@ function runDemoFlight() {
             const progress =
                 Math.min(step / 360, 1);
 
-            const x = progress * 360;
-            const y = progress * -150;
+            const x =
+                progress * 230;
+
+            const y =
+                progress * -80;
 
             aircraft.style.transform =
                 `translate(${x}px, ${y}px) rotate(-8deg)`;
@@ -867,45 +844,22 @@ function runDemoFlight() {
                 message.textContent =
                     "FLIGHT COMPLETE";
             }
+
+            /*
+             * Restart the visual demo
+             * after a short pause.
+             */
+            setTimeout(function () {
+
+                if (!roundRunning) {
+                    runDemoFlight();
+                }
+
+            }, 1500);
         }
 
     }, 100);
 }
-    function addFlightHistory(multiplier) {
-
-    const history =
-        document.getElementById("flightHistory");
-
-    if (!history) {
-        return;
-    }
-
-    const empty =
-        history.querySelector("span");
-
-    if (empty) {
-        empty.remove();
-    }
-
-    const item =
-        document.createElement("span");
-
-    item.textContent =
-        multiplier.toFixed(2) + "x";
-
-    item.style.padding = "6px 9px";
-    item.style.borderRadius = "8px";
-    item.style.background =
-        "rgba(255,255,255,.08)";
-    item.style.fontWeight = "700";
-    item.style.fontSize = "13px";
-
-    history.prepend(item);
-
-    while (history.children.length > 8) {
-        history.lastElementChild.remove();
-    }
-    }
 
 
 /* ================================
