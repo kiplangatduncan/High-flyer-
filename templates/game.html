@@ -5,7 +5,6 @@
 <div class="game-shell">
 
     <!-- TOP BAR -->
-
     <div class="game-top">
 
         <div id="multiplier" class="multiplier">
@@ -24,7 +23,6 @@
 
 
     <!-- GAME AREA -->
-
     <div class="game-stage">
 
         <div class="sky">
@@ -36,116 +34,163 @@
                 ✦
             </div>
 
-           <div id="aircraft" class="aircraft">
 
-    <svg viewBox="0 0 220 100" aria-label="High Flyer aircraft">
-        <defs>
-            <linearGradient id="planeBody" x1="0" x2="1">
-                <stop offset="0%" stop-color="#ffffff"/>
-                <stop offset="55%" stop-color="#e8f3ff"/>
-                <stop offset="100%" stop-color="#ff3d4f"/>
-            </linearGradient>
+            <!-- AIRCRAFT -->
+            <div id="aircraft" class="aircraft">
 
-            <linearGradient id="planeWing" x1="0" x2="1">
-                <stop offset="0%" stop-color="#ff3048"/>
-                <stop offset="100%" stop-color="#ffd34d"/>
-            </linearGradient>
-        </defs>
+                <svg
+                    viewBox="0 0 220 100"
+                    aria-label="High Flyer aircraft"
+                >
 
-        <!-- Glow -->
-        <ellipse
-            cx="105"
-            cy="58"
-            rx="82"
-            ry="20"
-            fill="rgba(255,190,40,.18)"
-        />
+                    <defs>
 
-        <!-- Main body -->
-        <path
-            d="M18 48
-               C52 45 86 39 124 29
-               L181 14
-               C194 11 207 17 210 25
-               C205 31 196 34 184 35
-               L137 42
-               C109 47 78 55 48 63
-               L25 68
-               C17 69 12 64 18 48Z"
-            fill="url(#planeBody)"
-        />
+                        <linearGradient
+                            id="planeBody"
+                            x1="0"
+                            x2="1"
+                        >
+                            <stop
+                                offset="0%"
+                                stop-color="#ffffff"
+                            />
 
-        <!-- Upper wing -->
-        <path
-            d="M92 40
-               L132 3
-               C137 -1 144 1 141 7
-               L120 45Z"
-            fill="url(#planeWing)"
-        />
+                            <stop
+                                offset="55%"
+                                stop-color="#e8f3ff"
+                            />
 
-        <!-- Lower wing -->
-        <path
-            d="M103 48
-               L143 78
-               C148 82 143 87 137 84
-               L91 55Z"
-            fill="url(#planeWing)"
-        />
+                            <stop
+                                offset="100%"
+                                stop-color="#ff3d4f"
+                            />
+                        </linearGradient>
 
-        <!-- Tail -->
-        <path
-            d="M34 49
-               L9 25
-               C5 21 9 17 14 20
-               L52 42Z"
-            fill="#ff4052"
-        />
 
-        <!-- Cockpit -->
-        <path
-            d="M139 28
-               C151 17 166 15 178 18
-               L165 31Z"
-            fill="#163d73"
-        />
+                        <linearGradient
+                            id="planeWing"
+                            x1="0"
+                            x2="1"
+                        >
+                            <stop
+                                offset="0%"
+                                stop-color="#ff3048"
+                            />
 
-        <!-- Cockpit shine -->
-        <path
-            d="M148 24 L160 20 L154 28Z"
-            fill="#8bdcff"
-        />
+                            <stop
+                                offset="100%"
+                                stop-color="#ffd34d"
+                            />
+                        </linearGradient>
 
-        <!-- Nose -->
-        <circle
-            cx="199"
-            cy="25"
-            r="8"
-            fill="#ffcc38"
-        />
+                    </defs>
 
-        <!-- Propeller -->
-        <ellipse
-            cx="207"
-            cy="25"
-            rx="4"
-            ry="27"
-            fill="rgba(255,255,255,.65)"
-        />
 
-        <ellipse
-            cx="207"
-            cy="25"
-            rx="27"
-            ry="4"
-            fill="rgba(255,255,255,.55)"
-        />
+                    <!-- Glow -->
+                    <ellipse
+                        cx="105"
+                        cy="58"
+                        rx="82"
+                        ry="20"
+                        fill="rgba(255,190,40,.18)"
+                    />
 
-    </svg>
 
-           </div> 
+                    <!-- Main body -->
+                    <path
+                        d="M18 48
+                           C52 45 86 39 124 29
+                           L181 14
+                           C194 11 207 17 210 25
+                           C205 31 196 34 184 35
+                           L137 42
+                           C109 47 78 55 48 63
+                           L25 68
+                           C17 69 12 64 18 48Z"
+                        fill="url(#planeBody)"
+                    />
+
+
+                    <!-- Upper wing -->
+                    <path
+                        d="M92 40
+                           L132 3
+                           C137 -1 144 1 141 7
+                           L120 45Z"
+                        fill="url(#planeWing)"
+                    />
+
+
+                    <!-- Lower wing -->
+                    <path
+                        d="M103 48
+                           L143 78
+                           C148 82 143 87 137 84
+                           L91 55Z"
+                        fill="url(#planeWing)"
+                    />
+
+
+                    <!-- Tail -->
+                    <path
+                        d="M34 49
+                           L9 25
+                           C5 21 9 17 14 20
+                           L52 42Z"
+                        fill="#ff4052"
+                    />
+
+
+                    <!-- Cockpit -->
+                    <path
+                        d="M139 28
+                           C151 17 166 15 178 18
+                           L165 31Z"
+                        fill="#163d73"
+                    />
+
+
+                    <!-- Cockpit shine -->
+                    <path
+                        d="M148 24
+                           L160 20
+                           L154 28Z"
+                        fill="#8bdcff"
+                    />
+
+
+                    <!-- Nose -->
+                    <circle
+                        cx="199"
+                        cy="25"
+                        r="8"
+                        fill="#ffcc38"
+                    />
+
+
+                    <!-- Propeller -->
+                    <ellipse
+                        cx="207"
+                        cy="25"
+                        rx="4"
+                        ry="27"
+                        fill="rgba(255,255,255,.65)"
+                    />
+
+                    <ellipse
+                        cx="207"
+                        cy="25"
+                        rx="27"
+                        ry="4"
+                        fill="rgba(255,255,255,.55)"
+                    />
+
+                </svg>
+
+            </div>
 
         </div>
+
 
         <div
             class="game-message"
@@ -158,7 +203,6 @@
 
 
     <!-- GAME CONTROL -->
-
     <div class="card game-controls">
 
         <h2>Play Round</h2>
@@ -220,651 +264,4 @@
 
             <span>
                 Selected:
-                <strong id="selectedPlayer">
-                    None
-                </strong>
-            </span>
-
-            <span>
-                Balance:
-                <strong id="selectedBalance">
-                    0.00
-                </strong>
-                pts
-            </span>
-
-            <span>
-                Round:
-                <strong id="roundStatus">
-                    WAITING
-                </strong>
-            </span>
-
-        </div>
-
-    </div>
-
-
-    <!-- PLAYERS -->
-
-    <div class="player-strip">
-
-        {% for player in players %}
-
-        <div
-            class="player-card"
-            id="player-card-{{ player.id }}"
-        >
-
-            <div class="number">
-                {{ loop.index }}
-            </div>
-
-            <div>
-
-                <strong>
-                    {{ player.username }}
-                </strong>
-
-                <small>
-                    {{ "%.2f"|format(player.balance) }} pts
-                </small>
-
-            </div>
-
-        </div>
-
-        {% endfor %}
-
-    </div>
-
-
-    <!-- POINTS NOTICE -->
-
-    <div class="card">
-
-        <p>
-            <strong>Game Points:</strong>
-            Points are for gameplay only and cannot be
-            converted to or withdrawn as money.
-        </p>
-
-    </div>
-
-</div>
-
-
-<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
-
-<script>
-
-const socket = io();
-
-socket.emit(
-    "join_game",
-    {
-        username: "{{ session.get('username') }}"
-    }
-);
-
-
-// ============================================================
-// ELEMENTS
-// ============================================================
-
-const multiplierElement =
-    document.getElementById("multiplier");
-
-const aircraft =
-    document.getElementById("aircraft");
-
-const message =
-    document.getElementById("gameMessage");
-
-const playerSelect =
-    document.getElementById("playerSelect");
-
-const stakeInput =
-    document.getElementById("stake");
-
-const playButton =
-    document.getElementById("playButton");
-
-const collectButton =
-    document.getElementById("collectButton");
-
-const selectedPlayer =
-    document.getElementById("selectedPlayer");
-
-const selectedBalance =
-    document.getElementById("selectedBalance");
-
-const roundStatus =
-    document.getElementById("roundStatus");
-
-
-// ============================================================
-// GAME VARIABLES
-// ============================================================
-
-let currentMultiplier = 1.00;
-
-let currentRoundId = null;
-
-let roundRunning = false;
-
-let multiplierTimer = null;
-
-
-// ============================================================
-// PLAYER SELECTION
-// ============================================================
-
-playerSelect.addEventListener(
-    "change",
-    function () {
-
-        const option =
-            this.options[this.selectedIndex];
-
-        if (!this.value) {
-
-            selectedPlayer.textContent =
-                "None";
-
-            selectedBalance.textContent =
-                "0.00";
-
-            return;
-        }
-
-        selectedPlayer.textContent =
-            option.text.split(" — ")[0];
-
-        selectedBalance.textContent =
-            parseFloat(
-                option.dataset.balance || 0
-            ).toFixed(2);
-    }
-);
-
-
-// ============================================================
-// START ROUND
-// ============================================================
-
-async function startRound() {
-
-    if (roundRunning) {
-        return;
-    }
-
-    const playerId =
-        playerSelect.value;
-
-    const stake =
-        parseFloat(stakeInput.value);
-
-
-    if (!playerId) {
-
-        alert(
-            "Select a player first."
-        );
-
-        return;
-    }
-
-
-    if (!stake || stake <= 0) {
-
-        alert(
-            "Enter the points to play."
-        );
-
-        return;
-    }
-
-
-    const form =
-        new FormData();
-
-    form.append(
-        "player_id",
-        playerId
-    );
-
-    form.append(
-        "stake",
-        stake
-    );
-
-
-    try {
-
-        const response =
-            await fetch(
-                "{{ url_for('player_play') }}",
-                {
-                    method: "POST",
-                    body: form
-                }
-            );
-
-
-        const data =
-            await response.json();
-
-
-        if (!data.success) {
-
-            alert(
-                data.message
-            );
-
-            return;
-        }
-
-
-        currentRoundId =
-            data.round_id;
-
-        currentMultiplier =
-            1.00;
-
-        roundRunning =
-            true;
-
-
-        playButton.disabled =
-            true;
-
-        collectButton.disabled =
-            false;
-
-        playerSelect.disabled =
-            true;
-
-        stakeInput.disabled =
-            true;
-
-
-        roundStatus.textContent =
-            "FLYING";
-
-        message.textContent =
-            "FLYING";
-
-
-        startMultiplier();
-
-    } catch (error) {
-
-        console.error(error);
-
-        alert(
-            "Unable to start the round."
-        );
-    }
-}
-
-
-// ============================================================
-// MULTIPLIER
-// ============================================================
-
-function startMultiplier() {
-
-    if (multiplierTimer) {
-        clearInterval(multiplierTimer);
-    }
-
-    currentMultiplier = 1.00;
-
-    multiplierEl.textContent =
-        currentMultiplier.toFixed(2) + "x";
-
-    roundRunning = true;
-
-    multiplierTimer = setInterval(() => {
-
-        if (!roundRunning) {
-            clearInterval(multiplierTimer);
-            multiplierTimer = null;
-            return;
-        }
-
-        currentMultiplier += 0.01;
-
-        multiplierEl.textContent =
-            currentMultiplier.toFixed(2) + "x";
-
-        const aircraft =
-            document.getElementById("aircraft");
-
-        if (aircraft) {
-
-            const x =
-                Math.min(
-                    currentMultiplier * 12,
-                    500
-                );
-
-            const y =
-                -Math.min(
-                    currentMultiplier * 5,
-                    170
-                );
-
-            aircraft.style.transform =
-                `translate(${x}px, ${y}px)`;
-        }
-
-    }, 120);
-}
-// ============================================================
-// COLLECT
-// ============================================================
-
-async function collectPoints() {
-
-    if (!roundRunning) {
-        return;
-    }
-
-
-    if (!currentRoundId) {
-        return;
-    }
-
-
-    const form =
-        new FormData();
-
-
-    form.append(
-        "round_id",
-        currentRoundId
-    );
-
-
-    form.append(
-        "multiplier",
-        currentMultiplier.toFixed(2)
-    );
-
-
-    try {
-
-        const response =
-            await fetch(
-                "{{ url_for('player_collect') }}",
-                {
-                    method: "POST",
-                    body: form
-                }
-            );
-
-
-        const data =
-            await response.json();
-
-
-        if (!data.success) {
-
-            alert(
-                data.message
-            );
-
-            return;
-        }
-
-
-        endRound();
-
-
-        message.textContent =
-            "COLLECTED "
-            + data.points.toFixed(2)
-            + " POINTS";
-
-
-        roundStatus.textContent =
-            "COLLECTED";
-
-
-        updatePlayerBalance(
-            data.points
-        );
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        alert(
-            "Unable to collect points."
-        );
-    }
-}
-
-
-// ============================================================
-// END ROUND
-// ============================================================
-
-function endRound() {
-
-    roundRunning =
-        false;
-
-    currentRoundId =
-        null;
-
-
-    clearInterval(
-        multiplierTimer
-    );
-
-
-    playButton.disabled =
-        false;
-
-    collectButton.disabled =
-        true;
-
-    playerSelect.disabled =
-        false;
-
-    stakeInput.disabled =
-        false;
-}
-
-
-// ============================================================
-// UPDATE PLAYER DISPLAY
-// ============================================================
-
-async function updatePlayerBalance(
-    collected
-) {
-
-    const playerId =
-        playerSelect.value;
-
-
-    if (!playerId) {
-        return;
-    }
-
-
-    try {
-
-        const response =
-            await fetch(
-                `/player/balance/${playerId}`
-            );
-
-
-        const data =
-            await response.json();
-
-
-        if (!data.success) {
-            return;
-        }
-
-
-        selectedBalance.textContent =
-            Number(
-                data.balance
-            ).toFixed(2);
-
-
-        const option =
-            playerSelect.options[
-                playerSelect.selectedIndex
-            ];
-
-
-        option.dataset.balance =
-            data.balance;
-
-
-        option.text =
-            `${data.username} — ${Number(
-                data.balance
-            ).toFixed(2)} pts`;
-
-
-        const card =
-            document.getElementById(
-                `player-card-${playerId}`
-            );
-
-
-        if (card) {
-
-            const small =
-                card.querySelector("small");
-
-            if (small) {
-
-                small.textContent =
-                    `${Number(
-                        data.balance
-                    ).toFixed(2)} pts`;
-            }
-        }
-
-
-    } catch (error) {
-
-        console.error(error);
-    }
-}
-
-
-// ============================================================
-// MULTIPLAYER EVENT
-// ============================================================
-
-socket.on(
-    "player_joined",
-    function (data) {
-
-        console.log(
-            data.username
-            + " joined High Flyer"
-        );
-
-    }
-);
-
-
-// ============================================================
-// BALANCE EVENT
-// ============================================================
-
-socket.on(
-    "player_balance_updated",
-    function (data) {
-
-        console.log(
-            "Player balance updated:",
-            data.player_id
-        );
-
-    }
-);
-
-</script>
-
-{% endblock %}
-a
-// ============================================================
-// AUTO START HIGH FLYER
-// ============================================================
-// HIGH FLYER DEMO — AUTOMATIC FLIGHT + MULTIPLIER
-// ============================================================
-
-const multiplierDisplay =
-    document.querySelector(".multiplier");
-
-const plane =
-    document.querySelector("#aircraft") ||
-    document.querySelector(".aircraft");
-
-let demoMultiplier = 1.00;
-
-function runDemoFlight() {
-
-    demoMultiplier = 1.00;
-
-    if (multiplierDisplay) {
-        multiplierDisplay.textContent = "1.00x";
-    }
-
-    let step = 0;
-
-    const timer = setInterval(() => {
-
-        step++;
-
-        demoMultiplier += 0.01;
-
-        if (multiplierDisplay) {
-            multiplierDisplay.textContent =
-                demoMultiplier.toFixed(2) + "x";
-        }
-
-        // Move the plane independently of the multiplier
-        if (plane) {
-
-            const progress = Math.min(step / 500, 1);
-
-            const x = progress * 700;
-            const y = progress * -300;
-
-            plane.style.transform =
-                `translate(${x}px, ${y}px) rotate(-8deg)`;
-        }
-
-        // Restart after reaching the end
-        if (step >= 500) {
-
-            clearInterval(timer);
-
-            setTimeout(() => {
-                runDemoFlight();
-            }, 1000);
-        }
-
-    }, 100);
-}
-
-
-// Start after page loads
-window.addEventListener("load", () => {
-    setTimeout(runDemoFlight, 500);
-});
+                <strong
