@@ -808,93 +808,104 @@ function runDemoFlight() {
     }
 
     if (demoTimer) {
-
-        clearInterval(
-            demoTimer
-        );
+        clearInterval(demoTimer);
+        demoTimer = null;
     }
 
     let step = 0;
     let demoMultiplier = 1.00;
 
     if (aircraft) {
-
         aircraft.style.transform =
             "translate(0px, 0px) rotate(-8deg)";
     }
 
     if (multiplierElement) {
-
-        multiplierElement.textContent =
-            "1.00x";
+        multiplierElement.textContent = "1.00x";
     }
 
-    demoTimer =
-        setInterval(
-            function () {
+    if (message) {
+        message.textContent = "FLIGHT IN PROGRESS";
+    }
 
-                if (roundRunning) {
+    demoTimer = setInterval(function () {
 
-                    clearInterval(
-                        demoTimer
-                    );
+        if (roundRunning) {
+            clearInterval(demoTimer);
+            demoTimer = null;
+            return;
+        }
 
-                    demoTimer = null;
+        step++;
+        demoMultiplier += 0.01;
 
-                    return;
-                }
+        if (multiplierElement) {
+            multiplierElement.textContent =
+                demoMultiplier.toFixed(2) + "x";
+        }
 
-                step++;
+        if (aircraft) {
 
-                demoMultiplier +=
-                    0.01;
+            const progress =
+                Math.min(step / 360, 1);
 
-                multiplierElement.textContent =
-                    demoMultiplier.toFixed(2)
-                    + "x";
+            const x = progress * 360;
+            const y = progress * -150;
 
-                if (aircraft) {
+            aircraft.style.transform =
+                `translate(${x}px, ${y}px) rotate(-8deg)`;
+        }
 
-                    const progress =
-                        Math.min(
-                            step / 500,
-                            1
-                        );
+        if (step >= 360) {
 
-                    const x =
-                        progress * 700;
+            clearInterval(demoTimer);
+            demoTimer = null;
 
-                    const y =
-                        progress * -300;
+            addFlightHistory(demoMultiplier);
 
-                    aircraft.style.transform =
-                        `translate(${x}px, ${y}px) rotate(-8deg)`;
-                }
+            if (message) {
+                message.textContent =
+                    "FLIGHT COMPLETE";
+            }
+        }
 
-                if (step >= 500) {
-
-                    clearInterval(
-                        demoTimer
-                    );
-
-                    demoTimer = null;
-
-                    setTimeout(
-                        function () {
-
-                            if (!roundRunning) {
-                                runDemoFlight();
-                            }
-
-                        },
-                        1000
-                    );
-                }
-
-            },
-            100
-        );
+    }, 100);
 }
+    function addFlightHistory(multiplier) {
+
+    const history =
+        document.getElementById("flightHistory");
+
+    if (!history) {
+        return;
+    }
+
+    const empty =
+        history.querySelector("span");
+
+    if (empty) {
+        empty.remove();
+    }
+
+    const item =
+        document.createElement("span");
+
+    item.textContent =
+        multiplier.toFixed(2) + "x";
+
+    item.style.padding = "6px 9px";
+    item.style.borderRadius = "8px";
+    item.style.background =
+        "rgba(255,255,255,.08)";
+    item.style.fontWeight = "700";
+    item.style.fontSize = "13px";
+
+    history.prepend(item);
+
+    while (history.children.length > 8) {
+        history.lastElementChild.remove();
+    }
+    }
 
 
 /* ================================
